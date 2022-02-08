@@ -3,41 +3,26 @@
     <h2>CONTACT ME</h2>
     <p class="des">有任何问题请联系我吧，收到消息后会给您回复邮件的哦♪(^∇^*)</p>
     <el-form
-        :model="ruleForm"
-        :rules="rules"
-        status-icon
-        ref="Goudan"
-        class="demo-ruleForm">
+      :model="ruleForm"
+      :rules="rules"
+      status-icon
+      ref="Goudan"
+      class="demo-ruleForm"
+    >
       <el-form-item label="Your Name" prop="name">
-        <el-input
-            type="text"
-            v-model="ruleForm.name"
-        ></el-input>
+        <el-input type="text" v-model="ruleForm.name"></el-input>
       </el-form-item>
       <el-form-item label="Your Email" prop="email">
-        <el-input
-            type="text"
-            v-model="ruleForm.email"
-        ></el-input>
+        <el-input type="text" v-model="ruleForm.email"></el-input>
       </el-form-item>
       <el-form-item label="Subject">
-        <el-input
-            type="text"
-            v-model="ruleForm.subject"
-        ></el-input>
+        <el-input type="text" v-model="ruleForm.subject"></el-input>
       </el-form-item>
       <el-form-item label="Your Message" prop="message">
-        <el-input
-            type="text"
-            v-model="ruleForm.message"
-        ></el-input>
+        <el-input type="text" v-model="ruleForm.message"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button
-            type="primary"
-            @click="handleContactSubmit"
-        >Send
-        </el-button>
+        <el-button type="primary" @click="handleContactSubmit">Send </el-button>
       </el-form-item>
     </el-form>
   </article>
@@ -52,36 +37,52 @@ export default {
         name: "",
         email: "",
         subject: "",
-        message: ""
+        message: "",
       },
       rules: {
-        name: [
-          {required: true, trigger: "blur"}
-        ],
-        email: [
-          {type: "email", required: true, trigger: "blur"}
-        ],
-        message: [
-          {required: true, trigger: "blur"}
-        ]
-      }
-    }
+        name: [{ required: true, trigger: "blur" }],
+        email: [{ type: "email", required: true, trigger: "blur" }],
+        message: [{ required: true, trigger: "blur" }],
+      },
+    };
   },
   methods: {
     handleContactSubmit() {
       //验证表单的所有数据是否准确
-      this.$refs.Goudan.validate(vaild => {
-        if (vaild){
+      this.$refs.Goudan.validate((vaild) => {
+        if (vaild) {
           //通过所有数据的验证
-          console.log("发送请求给后端")
-        }else{
+          console.log("发送请求给后端");
+          this.sendEmail();
+        } else {
           //验证不通过
-          return false
+          return false;
         }
-      })
-    }
-  }
-}
+      });
+    },
+    async sendEmail() {
+      let res = await this.$axios({
+        method: "post",
+        url: "/sendMail",
+        data: this.ruleForm,
+      });
+        console.log('res: ', res);
+      if (res?.status == 200) {
+        this.$message({
+          type: "success",
+          duration: 1500,
+          message: res?.data?.msg,
+        });
+      } else {
+        this.$message({
+          type: "error",
+          duration: 1500,
+          message: res?.data?.msg,
+        });
+      }
+    },
+  },
+};
 </script>
 
 <style scoped lang="less">
@@ -104,7 +105,7 @@ export default {
     color: #000;
     outline: 0;
     cursor: pointer;
-    transition: box-shadow .3s;
+    transition: box-shadow 0.3s;
 
     &:hover {
       box-shadow: 0 3px 5px #bbb;
@@ -112,7 +113,6 @@ export default {
   }
 }
 </style>
-
 
 <!--/*{
 validator(rule, value, callback){
@@ -127,8 +127,3 @@ callback(new Error("邮箱不满足匹配规则"))
 },
 trigger: "blur"
 }*/-->
-
-
-
-
-
